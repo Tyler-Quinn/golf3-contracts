@@ -221,37 +221,53 @@ contract Golf3Round is IGolf3Round {
         uint256 holeCount = roundInit.holePars.length;
         uint256 playerCount = roundInit.players.length;
         address[] memory players = roundInit.players;
+
+        // get number of skins players
+        uint256 totalSkinsPlayers;
+        for (uint256 i; i < playerCount; ++i) {
+            if (paidSkinsBuyIn[players[i]]) {
+                ++totalSkinsPlayers;
+            }
+        }
         
         // get amount of skins won per player
         // player must have paid the skins buy in
-        uint256 skinPushCount = 1;
+        // leftover skins get disbursed to those who bought in
         uint256[] memory skinWinCount = new uint256[](playerCount);
+        uint256 skinPushCount = 1;
         uint256 skinWinner;
+        uint256 totalSkinsWon;
         for (uint256 i; i < holeCount; ++i) {
             bool pushSkin;
             uint256 lowestScore;
             for (uint256 j; j < playerCount; ++j) {
-                if ((_scores[(holeCount * j) + i] < lowestScore) && (paidSkinsBuyIn[players[j]])) {
-                    lowestScore = _scores[(holeCount * j) + i];
-                    skinWinner = j;
-                    pushSkin = false;
-                } else {
-                    pushSkin = true;
+                if (paidSkinsBuyIn[players[j]]) {
+                    uint256 volScore = _scores[(holeCount * j) + i];
+                    // lowest score being zero meaning this is the first player that bought in being evaluated
+                    if ((volScore < lowestScore) || (lowestScore == 0)) {
+                        lowestScore = volScore;
+                        skinWinner = j;
+                        pushSkin = false;
+                    } else if (volScore == lowestScore) {
+                        pushSkin = true;
+                    }
                 }
             }
             if (pushSkin) {
                 ++skinPushCount;
             } else {
                 skinWinCount[skinWinner] += skinPushCount;
+                totalSkinsWon += skinPushCount;
                 skinPushCount = 1;
             }
         }
 
         // disperse skins payout to be claimed by players
         uint256 totalPaidOut;
+        uint256 leftoverAmount = (skinsRoundTotal * (holeCount - totalSkinsWon)) / holeCount / totalSkinsPlayers;
         for (uint256 i; i < playerCount; ++i) {
-            if (skinWinCount[i] > 0) {
-                uint256 payout = skinsRoundTotal * skinWinCount[i] / holeCount;
+            if (paidSkinsBuyIn[players[i]]) {
+                uint256 payout = leftoverAmount + (skinsRoundTotal * skinWinCount[i] / holeCount);
                 amountClaimable[players[i]] += payout;
                 totalPaidOut += payout;
                 emit SkinsWinnings(address(this), players[i], payout, block.timestamp);

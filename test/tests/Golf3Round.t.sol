@@ -1524,6 +1524,7 @@ contract Golf3RoundTest is Test {
         assertEq(payoutPercent.length, 3);
         uint256 moneyRoundTotal = Golf3Round(roundAddressMoneyRound).moneyRoundTotal();
         assertTrue(moneyRoundTotal < players.length *_amount);
+        assertTrue(moneyRoundTotal >= 0);
         
         // because all players tied, the total accumulated percent was equal to the BASE (100%)
         uint256 claimAmount = (players.length*_amount) * BASE / BASE / players.length;
@@ -1608,49 +1609,49 @@ contract Golf3RoundTest is Test {
         score[4] = 3;
         score[5] = 5;
         //player 1
-        score[6] = 1;
+        score[6] = 2;
         score[7] = 4;
         score[8] = 4;
         score[9] = 3;
         score[10] = 3;
         score[11] = 5;
         //player 2
-        score[12] = 1;
+        score[12] = 2;
         score[13] = 4;
         score[14] = 4;
         score[15] = 2; // skins won: 3
         score[16] = 3;
         score[17] = 5;
         //player 3
-        score[18] = 1;
+        score[18] = 2;
         score[19] = 4;
         score[20] = 4;
         score[21] = 3;
         score[22] = 3;
         score[23] = 5;
         //player 4
-        score[24] = 1;
+        score[24] = 2;
         score[25] = 4;
         score[26] = 4;
         score[27] = 3;
         score[28] = 3;
         score[29] = 5;
         //player 5
-        score[30] = 1;
+        score[30] = 2;
         score[31] = 4;
-        score[32] = 4;
+        score[32] = 5;
         score[33] = 3;
         score[34] = 3;
         score[35] = 5;
         //player 6
-        score[36] = 1;
+        score[36] = 2;
         score[37] = 4;
-        score[38] = 4;
+        score[38] = 5;
         score[39] = 3;
         score[40] = 3;
         score[41] = 5;
         //player 7
-        score[42] = 1;
+        score[42] = 2;
         score[43] = 4;
         score[44] = 4;
         score[45] = 3;
@@ -1665,8 +1666,11 @@ contract Golf3RoundTest is Test {
         emit FinalizeRound(roundAddressSkinsRound, players, score, putts, fir, gir);
         Golf3Round(roundAddressSkinsRound).finalizeRound(score, putts, fir, gir);
 
+        assertTrue(Golf3Round(roundAddressSkinsRound).roundClosed());
+
         uint256 skinsRoundTotal = Golf3Round(roundAddressSkinsRound).skinsRoundTotal();
         assertTrue(skinsRoundTotal < players.length *_amount);
+        assertTrue(skinsRoundTotal >= 0);
 
         vm.stopPrank();
     }
