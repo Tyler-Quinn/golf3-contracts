@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.13;
 
-import "../../lib/forge-std/src/Test.sol";
+import {Test, console} from "../../lib/forge-std/src/Test.sol";
 import {MockERC20} from "../mocks/MockERC20.sol";
 import {Golf3Round} from "../../src/Golf3Round.sol";
 import {IGolf3Round} from "../../src/interfaces/IGolf3Round.sol";
