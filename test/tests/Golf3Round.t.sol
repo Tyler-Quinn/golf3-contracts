@@ -542,10 +542,7 @@ contract Golf3RoundTest is Test {
         score[6] = 3;
         score[7] = 3;
         score[8] = 3;
-        uint8[] memory putts;
-        bool[] memory fir;
-        bool[] memory gir;
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
+        Golf3Round(roundAddressSolo).finalizeRound(score);
         vm.expectRevert("round closed");
         Golf3Round(roundAddressSolo).depositBuyIn(0, 0);
         vm.stopPrank();
@@ -861,10 +858,7 @@ contract Golf3RoundTest is Test {
         score[6] = 3;
         score[7] = 3;
         score[8] = 3;
-        uint8[] memory putts;
-        bool[] memory fir;
-        bool[] memory gir;
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
+        Golf3Round(roundAddressSolo).finalizeRound(score);
         vm.expectRevert("round closed");
         Golf3Round(roundAddressSolo).donate(1e18);
         vm.stopPrank();
@@ -992,10 +986,7 @@ contract Golf3RoundTest is Test {
         score[6] = 3;
         score[7] = 3;
         score[8] = 3;
-        uint8[] memory putts;
-        bool[] memory fir;
-        bool[] memory gir;
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
+        Golf3Round(roundAddressSolo).finalizeRound(score);
         vm.expectRevert("round closed");
         Golf3Round(roundAddressSolo).withdrawDeposit();
         vm.stopPrank();
@@ -1107,11 +1098,8 @@ contract Golf3RoundTest is Test {
         vm.assume(_caller != roundAddressMoneyAndSkins);
         vm.startPrank(_caller);
         uint8[] memory score = new uint8[](9);
-        uint8[] memory putts;
-        bool[] memory fir;
-        bool[] memory gir;
         vm.expectRevert("only admin");
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
+        Golf3Round(roundAddressSolo).finalizeRound(score);
     }
 
     function testRevertFinalizeAlreadyClose() public {
@@ -1126,12 +1114,9 @@ contract Golf3RoundTest is Test {
         score[6] = 3;
         score[7] = 3;
         score[8] = 3;
-        uint8[] memory putts;
-        bool[] memory fir;
-        bool[] memory gir;
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
+        Golf3Round(roundAddressSolo).finalizeRound(score);
         vm.expectRevert("round closed");
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
+        Golf3Round(roundAddressSolo).finalizeRound(score);
         vm.stopPrank();
     }
 
@@ -1147,12 +1132,9 @@ contract Golf3RoundTest is Test {
         score[6] = 3;
         score[7] = 3;
         score[8] = 3;
-        uint8[] memory putts;
-        bool[] memory fir;
-        bool[] memory gir;
         vm.warp(block.timestamp + 10 days);
         vm.expectRevert("round timed out");
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
+        Golf3Round(roundAddressSolo).finalizeRound(score);
         vm.stopPrank();
     }
 
@@ -1164,62 +1146,8 @@ contract Golf3RoundTest is Test {
         for (uint8 i; i < _amountOfScores; ++i) {
             score[i] = 3;
         }
-        uint8[] memory putts;
-        bool[] memory fir;
-        bool[] memory gir;
         vm.expectRevert("invalid score array");
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
-        vm.stopPrank();
-    }
-
-    function testRevertFinalizeInvalidPuttsSizeSolo(uint8 _amountOfPutts) public {
-        vm.startPrank(testAdmin);
-        vm.assume(_amountOfPutts != 0);
-        vm.assume(_amountOfPutts != 9);
-        uint8[] memory score = new uint8[](9);
-        for (uint8 i; i < score.length; ++i) {
-            score[i] = 3;
-        }
-        uint8[] memory putts = new uint8[](_amountOfPutts);
-        for (uint8 i; i < _amountOfPutts; ++i) {
-            putts[i] = 2;
-        }
-        bool[] memory fir;
-        bool[] memory gir;
-        vm.expectRevert("invalid putts array");
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
-        vm.stopPrank();
-    }
-
-    function testRevertFinalizeInvalidFirSizeSolo(uint8 _amountOfFir) public {
-        vm.startPrank(testAdmin);
-        vm.assume(_amountOfFir != 0);
-        vm.assume(_amountOfFir != 9);
-        uint8[] memory score = new uint8[](9);
-        for (uint8 i; i < score.length; ++i) {
-            score[i] = 3;
-        }
-        uint8[] memory putts;
-        bool[] memory fir = new bool[](_amountOfFir);
-        bool[] memory gir;
-        vm.expectRevert("invalid fir array");
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
-        vm.stopPrank();
-    }
-
-    function testRevertFinalizeInvalidGirSizeSolo(uint8 _amountOfGir) public {
-        vm.startPrank(testAdmin);
-        vm.assume(_amountOfGir != 0);
-        vm.assume(_amountOfGir != 9);
-        uint8[] memory score = new uint8[](9);
-        for (uint8 i; i < score.length; ++i) {
-            score[i] = 3;
-        }
-        uint8[] memory putts;
-        bool[] memory fir;
-        bool[] memory gir = new bool[](_amountOfGir);
-        vm.expectRevert("invalid gir array");
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
+        Golf3Round(roundAddressSolo).finalizeRound(score);
         vm.stopPrank();
     }
 
@@ -1229,48 +1157,14 @@ contract Golf3RoundTest is Test {
         for (uint8 i; i < score.length; ++i) {
             score[i] = 3;
         }
-        uint8[] memory putts;
-        bool[] memory fir;
-        bool[] memory gir;
 
         address[] memory players = Golf3Round(roundAddressSolo).getPlayers();
 
         assertTrue(!Golf3Round(roundAddressSolo).roundClosed());
 
         vm.expectEmit(false, false, false, false);
-        emit FinalizeRound(roundAddressSolo, players, score, putts, fir, gir);
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
-
-        for (uint8 i; i < score.length; ++i) {
-            assertEq(Golf3Round(roundAddressSolo).finalScores(i), 3);
-        }
-
-        assertTrue(Golf3Round(roundAddressSolo).roundClosed());
-
-        vm.stopPrank();
-    }
-
-    function testFinalizeSoloWithStats() public {
-        vm.startPrank(testAdmin);
-        uint256 arraySize = 9;
-        uint8[] memory score = new uint8[](arraySize);
-        uint8[] memory putts = new uint8[](arraySize);
-        bool[] memory fir = new bool[](arraySize);
-        bool[] memory gir = new bool[](arraySize);
-        for (uint8 i; i < score.length; ++i) {
-            score[i] = 3;
-            putts[i] = 2;
-            fir[i] = true;
-            gir[i] = false;
-        }
-
-        address[] memory players = Golf3Round(roundAddressSolo).getPlayers();
-
-        assertTrue(!Golf3Round(roundAddressSolo).roundClosed());
-
-        vm.expectEmit(false, false, false, false);
-        emit FinalizeRound(roundAddressSolo, players, score, putts, fir, gir);
-        Golf3Round(roundAddressSolo).finalizeRound(score, putts, fir, gir);
+        emit FinalizeRound(roundAddressSolo, players, score);
+        Golf3Round(roundAddressSolo).finalizeRound(score);
 
         for (uint8 i; i < score.length; ++i) {
             assertEq(Golf3Round(roundAddressSolo).finalScores(i), 3);
@@ -1288,48 +1182,14 @@ contract Golf3RoundTest is Test {
         for (uint8 i; i < score.length; ++i) {
             score[i] = 3;
         }
-        uint8[] memory putts;
-        bool[] memory fir;
-        bool[] memory gir;
 
         address[] memory players = Golf3Round(roundAddressMulti).getPlayers();
 
         assertTrue(!Golf3Round(roundAddressMulti).roundClosed());
 
         vm.expectEmit(false, false, false, false);
-        emit FinalizeRound(roundAddressMulti, players, score, putts, fir, gir);
-        Golf3Round(roundAddressMulti).finalizeRound(score, putts, fir, gir);
-
-        for (uint8 i; i < score.length; ++i) {
-            assertEq(Golf3Round(roundAddressMulti).finalScores(i), 3);
-        }
-
-        assertTrue(Golf3Round(roundAddressMulti).roundClosed());
-
-        vm.stopPrank();
-    }
-
-    function testFinalizeMultiWithStats() public {
-        vm.startPrank(testAdmin);
-        uint256 arraySize = testPlayers.length * 3;
-        uint8[] memory score = new uint8[](arraySize);
-        uint8[] memory putts = new uint8[](arraySize);
-        bool[] memory fir = new bool[](arraySize);
-        bool[] memory gir = new bool[](arraySize);
-        for (uint8 i; i < score.length; ++i) {
-            score[i] = 3;
-            putts[i] = 2;
-            fir[i] = true;
-            gir[i] = false;
-        }
-
-        address[] memory players = Golf3Round(roundAddressMulti).getPlayers();
-
-        assertTrue(!Golf3Round(roundAddressMulti).roundClosed());
-
-        vm.expectEmit(false, false, false, false);
-        emit FinalizeRound(roundAddressMulti, players, score, putts, fir, gir);
-        Golf3Round(roundAddressMulti).finalizeRound(score, putts, fir, gir);
+        emit FinalizeRound(roundAddressMulti, players, score);
+        Golf3Round(roundAddressMulti).finalizeRound(score);
 
         for (uint8 i; i < score.length; ++i) {
             assertEq(Golf3Round(roundAddressMulti).finalScores(i), 3);
@@ -1343,9 +1203,6 @@ contract Golf3RoundTest is Test {
     function testFinalizeMoneyRound(uint256 _amount) public {
         uint256 arraySize = testPlayers.length * 6;
         uint8[] memory score = new uint8[](arraySize);
-        uint8[] memory putts = new uint8[](arraySize);
-        bool[] memory fir = new bool[](arraySize);
-        bool[] memory gir = new bool[](arraySize);
 
         address[] memory players = Golf3Round(roundAddressMoneyRound).getPlayers();
 
@@ -1388,9 +1245,6 @@ contract Golf3RoundTest is Test {
         // to get that the score sort for payout distribution is correct
         for (uint8 i; i < score.length; ++i) {
             score[i] = 8 - (i / 6);   // first player gets all scores of 8, second gets 7, etc.
-            putts[i] = 2;
-            fir[i] = true;
-            gir[i] = false;
         }
 
         assertTrue(!Golf3Round(roundAddressMoneyRound).roundClosed());
@@ -1398,8 +1252,8 @@ contract Golf3RoundTest is Test {
         vm.startPrank(testAdmin);
 
         vm.expectEmit(false, false, false, false);
-        emit FinalizeRound(roundAddressMoneyRound, players, score, putts, fir, gir);
-        Golf3Round(roundAddressMoneyRound).finalizeRound(score, putts, fir, gir);
+        emit FinalizeRound(roundAddressMoneyRound, players, score);
+        Golf3Round(roundAddressMoneyRound).finalizeRound(score);
 
         for (uint8 i; i < score.length; ++i) {
             assertEq(Golf3Round(roundAddressMoneyRound).finalScores(i), 8 - (i / 6));
@@ -1460,10 +1314,6 @@ contract Golf3RoundTest is Test {
     function testFinalizeMoneyRoundEveryoneTies(uint256 _amount) public {
         uint256 arraySize = testPlayers.length * 6;
         uint8[] memory score = new uint8[](arraySize);
-        uint8[] memory putts = new uint8[](arraySize);
-        bool[] memory fir = new bool[](arraySize);
-        bool[] memory gir = new bool[](arraySize);
-
         address[] memory players = Golf3Round(roundAddressMoneyRound).getPlayers();
 
         uint256 buyInAmount;
@@ -1501,9 +1351,6 @@ contract Golf3RoundTest is Test {
         // everyone ties
         for (uint8 i; i < score.length; ++i) {
             score[i] = 4;
-            putts[i] = 2;
-            fir[i] = true;
-            gir[i] = false;
         }
 
         assertTrue(!Golf3Round(roundAddressMoneyRound).roundClosed());
@@ -1511,8 +1358,8 @@ contract Golf3RoundTest is Test {
         vm.startPrank(testAdmin);
 
         vm.expectEmit(false, false, false, false);
-        emit FinalizeRound(roundAddressMoneyRound, players, score, putts, fir, gir);
-        Golf3Round(roundAddressMoneyRound).finalizeRound(score, putts, fir, gir);
+        emit FinalizeRound(roundAddressMoneyRound, players, score);
+        Golf3Round(roundAddressMoneyRound).finalizeRound(score);
 
         for (uint8 i; i < score.length; ++i) {
             assertEq(Golf3Round(roundAddressMoneyRound).finalScores(i), 4);
@@ -1554,10 +1401,6 @@ contract Golf3RoundTest is Test {
     function testFinalizeSkinsRound(uint256 _amount) public {
         uint256 arraySize = testPlayers.length * 6;
         uint8[] memory score = new uint8[](arraySize);
-        uint8[] memory putts = new uint8[](arraySize);
-        bool[] memory fir = new bool[](arraySize);
-        bool[] memory gir = new bool[](arraySize);
-
         address[] memory players = Golf3Round(roundAddressSkinsRound).getPlayers();
 
         uint256 buyInAmount;
@@ -1594,12 +1437,6 @@ contract Golf3RoundTest is Test {
 
         // submit scores
         // player[0] gets 1 skin, player[2] gets 3 skins, 2 skins left over
-
-        for (uint8 i; i < score.length; ++i) {
-            putts[i] = 2;
-            fir[i] = true;
-            gir[i] = false;
-        }
 
         // player 0
         score[0] = 1; // skins won: 1
@@ -1663,8 +1500,8 @@ contract Golf3RoundTest is Test {
         vm.startPrank(testAdmin);
 
         vm.expectEmit(false, false, false, false);
-        emit FinalizeRound(roundAddressSkinsRound, players, score, putts, fir, gir);
-        Golf3Round(roundAddressSkinsRound).finalizeRound(score, putts, fir, gir);
+        emit FinalizeRound(roundAddressSkinsRound, players, score);
+        Golf3Round(roundAddressSkinsRound).finalizeRound(score);
 
         assertTrue(Golf3Round(roundAddressSkinsRound).roundClosed());
 
@@ -1682,10 +1519,7 @@ contract Golf3RoundTest is Test {
     event FinalizeRound(
         address indexed roundAddress,
         address[] players,
-        uint8[] scores,
-        uint8[] putts,
-        bool[] fir,
-        bool[] gir
+        uint8[] scores
     );
 
     event Claim(address indexed roundAddress, address indexed userAddress, uint256 claimAmount, uint256 timestamp);

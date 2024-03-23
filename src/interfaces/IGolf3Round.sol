@@ -25,10 +25,7 @@ interface IGolf3Round {
     event FinalizeRound(
         address indexed roundAddress,
         address[] players,
-        uint8[] scores,
-        uint8[] putts,
-        bool[] fir,
-        bool[] gir
+        uint8[] scores
     );
 
     event DepositedBuyIn(

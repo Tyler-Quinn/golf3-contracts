@@ -77,36 +77,20 @@ contract Golf3Round is IGolf3Round {
     /**
      * @dev closes round, finalizing all scores, payout if moneyRound or skinsRound
      * @param _scores array of players scores
-     * @param _putts array of players putt amount per hole
-     * @param _fir array of players fairways in regulation by hole
-     * @param _gir array of players greens in regulation by hole
      * NOTICE _scores must be of length #_of_players * #_of_holes
-     * NOTICE _putts, _fir, _gir must be of length zero or #_of_players * #_of_holes
      * NOTICE _scores intended to be in form _scores[i] where player = i / #_of_holes and hole = i % #_of_holes
      */
     function finalizeRound(
-        uint8[] calldata _scores,
-        uint8[] calldata _putts,
-        bool[] calldata _fir,
-        bool[] calldata _gir
+        uint8[] calldata _scores
     ) public onlyAdmin roundIsOpen {
         uint256 playersLength = roundInit.players.length;
         uint256 holeParsLength = roundInit.holePars.length;
         uint256 validArraySize = playersLength * holeParsLength;
         require(_scores.length == validArraySize, "invalid score array");
         finalScores = _scores;
-        if (_putts.length > 0) {
-            require(_putts.length == validArraySize, "invalid putts array");
-        }
-        if (_fir.length > 0) {
-            require(_fir.length == validArraySize, "invalid fir array");
-        }
-        if (_gir.length > 0) {
-            require(_gir.length == validArraySize, "invalid gir array");
-        }
         roundClosed = true;
 
-        emit FinalizeRound(address(this), roundInit.players, _scores, _putts, _fir, _gir);
+        emit FinalizeRound(address(this), roundInit.players, _scores);
 
         if (moneyRound) {
             IGolf3Round.PlayerValuePair[] memory playerScorePair = _sortAndScores(_scores);
